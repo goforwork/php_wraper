@@ -1,0 +1,1 @@
+<?php echo md5(md5('B2W5I!ds').'9272'); ?>

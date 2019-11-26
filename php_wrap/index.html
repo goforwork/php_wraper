@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHP Wrap</title>
+    <style>
+        html, body{
+            width: 100%;
+            height: 100%;
+        }
+        html,body,div,input,textarea{
+            margin: 0;
+            padding: 0;
+            border: 0;    
+        }
+        body{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .php-code-wrap{
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            display: block;
+            background-color: rgb(30, 30, 30);
+            color: rgb(204, 204, 204);
+            font-size: 18px;
+            word-spacing: 2px;
+            padding: 15px 15px 75px;
+        }
+        .submit{
+            width: 100%;
+            height: 60px;
+            line-height: 60px;
+            vertical-align: middle;
+            text-align: center;
+            font-size: 22px;
+            word-spacing: 20px;
+            font-weight: bold;
+            background-color: rgb(11, 110, 169);
+            color: #fff;
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <textarea class="php-code-wrap"></textarea>
+    <div class="submit">提交</div>
+</body>
+</html>
+<script>
+    let $ = require('./jquery.js');
+    let config = require('./config');
+    let fs = require('fs');
+    const { ipcRenderer } = require('electron')
+
+    let php_prefix = '<?php ';
+    let php_suffix = ' ?>';
+    let code = '';
+
+    window.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
+
+    $('.submit').click(function(){
+        code = php_prefix + $('.php-code-wrap').val() + php_suffix;
+        fs.writeFile('./code.php', code, function(e){
+            if(e){
+                console.log('保存错误：', e);
+                return;
+            }
+
+            console.log('执行结果：', ipcRenderer.sendSync('synchronous-message', 'php'));
+        });
+    });
+</script>
